@@ -1,0 +1,47 @@
+ (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+new file mode 100644
+index 0000000000000000000000000000000000000000..8dda88d267ad0681f13d28078b49e5ecba144224
+--- /dev/null
++++ b/.github/workflows/ci.yml
+@@ -0,0 +1,37 @@
++name: CI
++
++on:
++  push:
++    branches: [main]
++  pull_request:
++    branches: [main]
++
++jobs:
++  build:
++    runs-on: ubuntu-latest
++    steps:
++      - name: Checkout repository
++        uses: actions/checkout@v3
++
++      - name: Set up Python
++        uses: actions/setup-python@v4
++        with:
++          python-version: '3.10'
++
++      - name: Install dependencies
++        run: |
++          python -m pip install --upgrade pip
++          pip install -r requirements.txt
++          pip install .[dev]
++
++      - name: Lint with flake8
++        run: flake8 .
++
++      - name: Check formatting with black
++        run: black --check .
++
++      - name: Run unit tests
++        run: pytest
++
++      - name: Import dry run
++        run: python -m compileall ai_content_factory
+ 
+EOF
+)
